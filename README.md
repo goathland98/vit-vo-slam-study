@@ -33,7 +33,6 @@ The application of ViT to Visual Odometry
   - [VO KITTI GitHub (Visual Odometry on KITTI)](https://github.com/241abhishek/visual-odometry-KITTI)
   - [Google Vision Transformer](https://github.com/google-research/vision_transformer)
   - [LiDAR-SLAM Python Kitware](https://github.com/Kitware/pyLiDAR-SLAM/blob/master/slam/dataset/kitti_dataset.py)
-  - [SLAM Survey Paper](https://onlinelibrary.wiley.com/journal/14779730)
   - [SLAM + ViT GitHub 예제](https://github.com/MisterEkole/slam_with_vit)
   - [SLAM/VO 강의 YouTube](https://www.youtube.com/playlist?list=PLrHDCRerOaI9HfgZDbiEncG5dx7S3Nz6X)
 
