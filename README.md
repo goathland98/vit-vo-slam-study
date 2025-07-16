@@ -167,3 +167,120 @@ This project proposes the development, implementation, and evaluation of lightwe
   - Conduct edge-device deployment tests.
 
 ---
+
+# Efficient Vision Transformer Architecture for Visual Odometry in SLAM Applications on Edge Devices
+
+## 📌 Introduction
+
+Simultaneous Localization and Mapping (SLAM) is a foundational capability for autonomous navigation in robotics and intelligent vehicles.  
+Visual Odometry (VO) estimates frame-to-frame motion using camera input and is a critical component within SLAM pipelines.
+
+Recent advances in Vision Transformers (ViTs) show great potential for modeling global context and long-range dependencies, but their computational cost poses challenges for deployment on resource-constrained edge devices.
+
+This project aims to design, implement, and evaluate **lightweight Vision Transformer architectures** tailored for real-time monocular VO on embedded and edge platforms.
+
+---
+
+## 📚 Related Work
+
+- Classical VO-SLAM approaches (feature-based, CNN-based) and their limitations
+- Vision Transformer architectures:
+  - ViT, MobileViT, SmallViT, TinyViT, Swin Transformer
+- Transformer applications in SLAM:
+  - Temporal & spatial attention for motion estimation
+  - SLAM with transformer backbones (e.g., TimeSformer-VO)
+
+---
+
+## 🔬 Background
+
+- **Vision Transformer (ViT)**: uses self-attention over tokenized image patches
+- **Self-attention types**:
+  - Spatial attention → within-frame relationships
+  - Temporal attention → across-frame dynamics
+- **Advantages over CNNs**:
+  - Global context modeling
+  - Long-range dependency capture
+- **TimeSformer-VO overview**:
+  - Divided space-time attention backbone
+  - Applied to KITTI dataset for monocular VO
+
+---
+
+## 🚩 Problem Definition
+
+- High computational cost for real-time edge deployment
+- Accuracy gap vs. ground truth, especially in dynamic scenes
+- Dataset generalization challenges (e.g., KITTI → real-world, indoor, or urban environments)
+- Lack of explainability in learned attention mechanisms
+
+---
+
+## 💡 Proposed Research Directions
+
+- Apply **lightweight backbones**: MobileViT, SmallViT, TinyViT
+- Explore model optimizations:
+  - Token pruning
+  - Sparse attention
+  - Weight sharing
+- Investigate **hybrid CNN-Transformer** architectures
+- Optimize for edge deployment:
+  - Quantization
+  - Knowledge distillation
+- Develop attention visualization tools
+
+---
+
+## ⚙️ Methodology
+
+- **Model design**: architecture modifications & compression
+- **Training strategy**:
+  - Multi-task learning
+  - Pretraining on large datasets
+  - Regularization methods
+- **Evaluation metrics**:
+  - Accuracy (pose estimation error)
+  - Latency and FPS (real-time performance)
+  - Power consumption on edge devices (e.g., Jetson, Raspberry Pi, Snapdragon)
+- **Benchmarking**:
+  - KITTI dataset
+  - Cross-domain datasets for generalization
+
+---
+
+## 🌟 Expected Contributions
+
+✅ A novel lightweight VO-Transformer architecture  
+✅ Open-source benchmarking suite & reproducible experiments  
+✅ Visualization tools for interpreting temporal/spatial attention  
+✅ Insights into real-time deployment of transformers for robotics
+
+---
+
+## 🧪 Preliminary Plans
+
+- Baseline experiments with TimeSformer-VO on KITTI  
+- Integration of MobileViT, SmallViT backbones  
+- Planned cross-dataset validation and edge device profiling
+
+---
+
+## 📁 Resources
+
+- **SLAM + Transformer Survey**: https://kwanwaipang.github.io/Awesome-Transformer-based-SLAM/  
+- **Small-ViT-VO Article**: https://medium.com/@prabhs./compressing-a-large-vit-into-a-5m-parameter-tiny-model-that-still-reaches-strong-accuracy-on-2f01ec93fd9d  
+- **Pocket-ViT GitHub**: https://github.com/prabhxyz/pocket-vit  
+- **Visual Odometry KITTI GitHub**: https://github.com/241abhishek/visual-odometry-KITTI  
+- **SLAM Starting Code**: https://github.com/MisterEkole/slam_with_vit  
+
+---
+
+## 🔭 Future Work
+
+- Extend to multi-modal SLAM (e.g., visual-inertial, LiDAR-camera fusion)  
+- Apply to embedded systems (e.g., Jetson Nano, Raspberry Pi, Apple Neural Engine)  
+- Collaborate with robotics teams for real-world deployment
+
+---
+
+
