@@ -149,7 +149,7 @@ This project proposes the development, implementation, and evaluation of lightwe
 
 ---
 
-## xpected Contributions
+## Expected Contributions
 
 - Lightweight, efficient transformer-based VO models.
 - Benchmarking suite for VO-SLAM on edge hardware.
