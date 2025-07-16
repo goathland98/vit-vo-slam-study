@@ -57,3 +57,113 @@ The application of ViT to Visual Odometry
 - [ ] K80에서 batch size, mixed precision 최적화 실험
 - [ ] Attention map, temporal heatmap 시각화 추가
 - [ ] Edge device (Jetson, Raspberry Pi) 대상 실험 설계
+
+# Efficient Vision Transformer Architecture for Visual Odometry in SLAM Applications on Edge Devices
+
+## Overview
+
+This project proposes the development, implementation, and evaluation of lightweight Vision Transformer (ViT) architectures specifically designed for **monocular Visual Odometry (VO)** in **SLAM pipelines**, with a focus on real-time operation on **embedded and edge devices**.
+
+---
+
+## Motivation and Problem Statement
+
+- Classical VO/SLAM systems:
+  - Depend on feature-based or CNN-based methods.
+  - Struggle in low-texture, dynamic environments.
+  - Are not optimized for edge deployment.
+
+- **Transformers**:
+  - Provide global spatial + temporal attention.
+  - Achieve superior context modeling but at high computational cost.
+
+- **Research Goal**:
+  - Bring transformer-based VO models to edge devices via lightweight, efficient architectures.
+
+---
+
+## Background
+
+- **What is SLAM?**
+  - Simultaneous Localization and Mapping: estimate robot’s position + build a map.
+
+- **What is Visual Odometry (VO)?**
+  - Frame-to-frame pose estimation from visual input.
+
+- **Why Vision Transformers?**
+  - Use self-attention to capture global features.
+  - Outperform CNNs in various vision tasks.
+
+---
+
+## TSFormer-VO Overview
+
+- TimeSformer backbone.
+- Divided temporal + spatial attention.
+- Applied to KITTI dataset for monocular VO.
+- Current bottleneck:
+  - Computational load.
+  - Edge-device unsuitability.
+  - Generalization to non-KITTI datasets.
+
+---
+
+## Challenges
+
+- High compute cost (latency, memory).
+- Accuracy gaps under dynamic or challenging conditions.
+- Poor generalization across diverse datasets.
+- Need for explainability in decision-making.
+
+---
+
+## Proposed Research Directions
+
+- Apply **MobileViT, SmallViT, TinyViT** to replace base ViT backbone.
+- Explore:
+  - Token pruning.
+  - Sparse attention.
+  - Weight sharing.
+  - Hybrid CNN-Transformer architectures.
+- Add explainable attention visualization tools.
+- Optimize for:
+  - Quantization.
+  - Distillation.
+  - Edge-aware deployment.
+
+---
+
+## Methodology
+
+- **Model Design**:
+  - Modify transformer architecture for efficiency.
+- **Training Strategy**:
+  - Multi-task learning.
+  - Regularization.
+  - Pretraining on large-scale datasets.
+- **Evaluation Metrics**:
+  - Odometry accuracy (ATE, RPE).
+  - Latency, power, memory footprint.
+- **Benchmarking**:
+  - Edge devices: Jetson, Snapdragon, Apple Neural Engine.
+
+---
+
+## xpected Contributions
+
+- Lightweight, efficient transformer-based VO models.
+- Benchmarking suite for VO-SLAM on edge hardware.
+- Visual analytics tools (temporal/spatial attention).
+- Design guidelines for real-time deployment.
+
+---
+
+## Preliminary Plans
+
+- Baseline: TSFormer-VO on KITTI.
+- Next steps:
+  - Integrate MobileViT, SmallViT.
+  - Extend experiments to cross-domain datasets.
+  - Conduct edge-device deployment tests.
+
+---
