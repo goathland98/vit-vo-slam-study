@@ -49,7 +49,7 @@ The application of ViT to Visual Odometry
 
 ---
 
-##2025/07/17
+## 2025/07/17
 ### Prepared Presentation Draft
 
 - Completed slides for:
