@@ -68,8 +68,36 @@ The application of ViT to Visual Odometry
 - Explore token pruning, sparse attention, weight sharing
 - Evaluate accuracy vs. speed on KITTI dataset
 - Plan benchmark tests on edge devices
+### Summary of Code Changes
+
+We updated `train.py` with the following major improvements:
+
+1️. **Automatic Mixed Precision (AMP)**
+- Integrated `torch.cuda.amp` to enable mixed-precision training.
+- Benefits:
+  - Reduces GPU memory usage (~30-50% savings).
+  - Speeds up training on compatible GPUs.
+- Uses `GradScaler()` for stable backward pass.
+
+2️. **Sequential Training for All Models**
+- The script now automatically trains:
+  - `small-ViT` → `tiny-ViT` → `base-ViT`
+- Runs in a single execution.
+- Saves checkpoints separately under:
+  ```
+checkpoints/Exp4/small_vit/
+checkpoints/Exp4/tiny_vit/
+checkpoints/Exp4/base_vit/
+ ```
 
 
+3️. **Training & Validation Loss Curve Plotting**
+- After each model finishes training:
+- Saves a `loss_curve.png` showing training & validation loss over epochs.
+- Location:
+```
+checkpoints/Exp4/{model_size}_vit/loss_curve.png
+```
 
 # Efficient Vision Transformer Architecture for Visual Odometry in SLAM Applications on Edge Devices
 
