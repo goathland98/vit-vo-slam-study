@@ -62,7 +62,7 @@ The application of ViT to Visual Odometry
 ---
 ### Summary of Code Changes
 
-We updated `train.py` with the following major improvements:
+We updated `train_trio.py` with the following major improvements:
 
 1️. **Automatic Mixed Precision (AMP)**
 - Integrated `torch.cuda.amp` to enable mixed-precision training.
