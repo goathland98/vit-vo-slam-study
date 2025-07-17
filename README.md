@@ -1,8 +1,6 @@
 # vit-vo-slam-study
 The application of ViT to Visual Odometry 
 
-2025/07/14 
-
 # Research Log 
 
 ## 2025/07/14
@@ -51,12 +49,27 @@ The application of ViT to Visual Odometry
 
 ---
 
+##2025/07/17
+### Prepared Presentation Draft
+
+- Completed slides for:
+  - Introduction to SLAM & Visual Odometry (VO)
+  - Problem statement & motivation
+- Prepared diagrams:
+  - SLAM pipeline inputs (camera, LiDAR, IMU)
+  - Attention map examples (temporal & spatial)
+
+---
+
 ## Next Steps
 
-- [ ] MobileViT, TinyViT, SmallViT 모델을 TSFormer-VO에 적용해 성능 비교 실험
-- [ ] K80에서 batch size, mixed precision 최적화 실험
-- [ ] Attention map, temporal heatmap 시각화 추가
-- [ ] Edge device (Jetson, Raspberry Pi) 대상 실험 설계
+- Add slides: architecture details, challenges, and research directions
+- Integrate lightweight transformers (MobileViT, SmallViT)
+- Explore token pruning, sparse attention, weight sharing
+- Evaluate accuracy vs. speed on KITTI dataset
+- Plan benchmark tests on edge devices
+
+
 
 # Efficient Vision Transformer Architecture for Visual Odometry in SLAM Applications on Edge Devices
 
