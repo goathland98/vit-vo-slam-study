@@ -60,14 +60,6 @@ The application of ViT to Visual Odometry
   - Attention map examples (temporal & spatial)
 
 ---
-
-## Next Steps
-
-- Add slides: architecture details, challenges, and research directions
-- Integrate lightweight transformers (MobileViT, SmallViT)
-- Explore token pruning, sparse attention, weight sharing
-- Evaluate accuracy vs. speed on KITTI dataset
-- Plan benchmark tests on edge devices
 ### Summary of Code Changes
 
 We updated `train.py` with the following major improvements:
@@ -84,20 +76,26 @@ We updated `train.py` with the following major improvements:
   - `small-ViT` → `tiny-ViT` → `base-ViT`
 - Runs in a single execution.
 - Saves checkpoints separately under:
-  ```
-checkpoints/Exp4/small_vit/
+
+`checkpoints/Exp4/small_vit/
 checkpoints/Exp4/tiny_vit/
-checkpoints/Exp4/base_vit/
- ```
+checkpoints/Exp4/base_vit/`
+
 
 
 3️. **Training & Validation Loss Curve Plotting**
 - After each model finishes training:
 - Saves a `loss_curve.png` showing training & validation loss over epochs.
 - Location:
-```
-checkpoints/Exp4/{model_size}_vit/loss_curve.png
-```
+
+`checkpoints/Exp4/{model_size}_vit/loss_curve.png`
+## Next Steps
+
+- Add slides: architecture details, challenges, and research directions
+- Integrate lightweight transformers (MobileViT, SmallViT)
+- Explore token pruning, sparse attention, weight sharing
+- Evaluate accuracy vs. speed on KITTI dataset
+- Plan benchmark tests on edge devices
 
 # Efficient Vision Transformer Architecture for Visual Odometry in SLAM Applications on Edge Devices
 
