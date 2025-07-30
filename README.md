@@ -96,6 +96,81 @@ checkpoints/Exp4/base_vit/`
 - Explore token pruning, sparse attention, weight sharing
 - Evaluate accuracy vs. speed on KITTI dataset
 - Plan benchmark tests on edge devices
+##  2025/07/30 – Daily Update
+
+## Inference & Visualization Pipeline Summary
+
+---
+
+###  `predict_poses_trio.py` – Inference Script
+
+** Purpose:**
+- Run each trained ViT variant (`small`, `tiny`, `base`) on KITTI sequences.
+- Save raw 6-DoF relative pose predictions to `.npy` format.
+
+** Inputs:**
+- KITTI images: `datasets/sequences_jpg/<sequence>/`
+- Model checkpoints: ```
+checkpoints/Exp4/{small_vit,tiny_vit,base_vit}/
+├── args.pkl
+└── checkpoint_best.pth
+```
+
+** Outputs:**
+- For each model and sequence:
+```
+checkpoints/Exp4/{model_size}vit/checkpoint_best/
+└── pred_poses<sequence>.npy
+```
+(Shape: `[N_clips, window_size–1, 6]`)
+
+** Key Algorithm Steps:**
+1. Loop over models: `["small", "tiny", "base"]`
+2. Load config from `args.pkl` and model weights
+3. For each sequence:
+ - Build `KITTI` dataset loader
+ - Run inference (batch size = 1)
+ - Save raw relative poses as `.npy` file
+
+---
+
+### `plot_results_trio.py` – Post-processing & Visualization
+
+** Purpose:**
+- Convert raw `.npy` pose predictions into full trajectory
+- Save absolute camera pose files & trajectory plots vs. KITTI ground truth
+
+** Inputs:**
+- `.npy` outputs from `predict_poses_trio.py`
+- KITTI ground-truth poses:
+```
+datasets/poses/<sequence>.txt
+```
+- Model hyperparameters (`args.pkl`)
+
+** Outputs:**
+- Absolute camera poses:
+```
+checkpoints/Exp4/{model_size}_vit/checkpoint_best/pred_poses/<sequence>.txt
+```
+(Each line = 12 float values of a 3×4 pose matrix)
+
+- X–Z trajectory plots:
+```
+checkpoints/Exp4/{model_size}_vit/checkpoint_best/plots/<sequence>.png
+```
+
+**⚙ Key Algorithm Steps:**
+1. Loop over models: `["small", "tiny", "base"]`
+2. For each sequence:
+ - Load `.npy` predictions and post-process into 6-DoF
+ - Convert relative poses → 4×4 matrices → chained trajectory
+ - Compare against GT using X-Z projection
+ - Save both `.txt` files of poses and `.png` files of trajectory.
+
+---
+
+
 
 # Efficient Vision Transformer Architecture for Visual Odometry in SLAM Applications on Edge Devices
 
