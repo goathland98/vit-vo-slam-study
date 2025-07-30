@@ -110,7 +110,8 @@ checkpoints/Exp4/base_vit/`
 
 ** Inputs:**
 - KITTI images: `datasets/sequences_jpg/<sequence>/`
-- Model checkpoints: ```
+- Model checkpoints:
+```
 checkpoints/Exp4/{small_vit,tiny_vit,base_vit}/
 ├── args.pkl
 └── checkpoint_best.pth
