@@ -104,11 +104,11 @@ checkpoints/Exp4/base_vit/`
 
 ###  `predict_poses_trio.py` – Inference Script
 
-** Purpose:**
+ Purpose:
 - Run each trained ViT variant (`small`, `tiny`, `base`) on KITTI sequences.
 - Save raw 6-DoF relative pose predictions to `.npy` format.
 
-** Inputs:**
+ Inputs:
 - KITTI images: `datasets/sequences_jpg/<sequence>/`
 - Model checkpoints:
 ```
@@ -117,7 +117,7 @@ checkpoints/Exp4/{small_vit,tiny_vit,base_vit}/
 └── checkpoint_best.pth
 ```
 
-** Outputs:**
+ Outputs:
 - For each model and sequence:
 ```
 checkpoints/Exp4/{model_size}vit/checkpoint_best/
@@ -125,7 +125,7 @@ checkpoints/Exp4/{model_size}vit/checkpoint_best/
 ```
 (Shape: `[N_clips, window_size–1, 6]`)
 
-** Key Algorithm Steps:**
+ Key Algorithm Steps:
 1. Loop over models: `["small", "tiny", "base"]`
 2. Load config from `args.pkl` and model weights
 3. For each sequence:
@@ -137,11 +137,11 @@ checkpoints/Exp4/{model_size}vit/checkpoint_best/
 
 ### `plot_results_trio.py` – Post-processing & Visualization
 
-** Purpose:**
+Purpose:
 - Convert raw `.npy` pose predictions into full trajectory
 - Save absolute camera pose files & trajectory plots vs. KITTI ground truth
 
-** Inputs:**
+Inputs:
 - `.npy` outputs from `predict_poses_trio.py`
 - KITTI ground-truth poses:
 ```
@@ -149,7 +149,7 @@ datasets/poses/<sequence>.txt
 ```
 - Model hyperparameters (`args.pkl`)
 
-** Outputs:**
+ Outputs:
 - Absolute camera poses:
 ```
 checkpoints/Exp4/{model_size}_vit/checkpoint_best/pred_poses/<sequence>.txt
@@ -161,7 +161,7 @@ checkpoints/Exp4/{model_size}_vit/checkpoint_best/pred_poses/<sequence>.txt
 checkpoints/Exp4/{model_size}_vit/checkpoint_best/plots/<sequence>.png
 ```
 
-**⚙ Key Algorithm Steps:**
+Key Algorithm Steps:
 1. Loop over models: `["small", "tiny", "base"]`
 2. For each sequence:
  - Load `.npy` predictions and post-process into 6-DoF
