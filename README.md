@@ -171,6 +171,42 @@ Key Algorithm Steps:
 Mobilevit: [Unofficial implementation of Mobilevit](https://github.com/jaiwei98/mobile-vit-pytorch)
 ---
 
+## 2025/07/31 
+
+### Summary
+
+This report documents training and inference results for the TSFormer-VO model family (Tiny, Small, Base ViT variants) on the KITTI dataset.
+
+All three models were trained using a unified pipeline (`train_trio.py`) with AMP support and consistent hyperparameters. Their performance was then evaluated using `predict_poses_trio.py` and `plot_results_trio.py`.
+
+
+
+###  Observations
+
+- All three models **showed similar training dynamics** with decreasing loss trends.
+- However, **trajectory quality diverged sharply**:
+  - **Small ViT** exhibited major drift from the KITTI ground-truth path.
+  - **Tiny and Base ViT** achieved similar and more accurate reconstructions.
+
+
+###  Insights
+
+- **Loss curves alone may be misleading**: Despite good training loss, the Small ViT model failed to produce reliable global trajectories.
+- This suggests **generalization or architectural limitations** in that configuration.
+
+###  Future Direction
+
+We propose the following enhancements:
+
+- **MobileViT Integration**:
+  - Brings CNN inductive bias + global attention.
+  - Suitable for edge-device deployment (e.g., drones, mobile SLAM).
+- **Model Compression**:
+  - Token pruning
+  - Sparse attention
+  - Weight sharing
+
+These directions aim to improve trajectory robustness while keeping the model lightweight and fast for real-time applications.
 
 
 # Efficient Vision Transformer Architecture for Visual Odometry in SLAM Applications on Edge Devices
@@ -179,7 +215,6 @@ Mobilevit: [Unofficial implementation of Mobilevit](https://github.com/jaiwei98/
 
 This project proposes the development, implementation, and evaluation of lightweight Vision Transformer (ViT) architectures specifically designed for **monocular Visual Odometry (VO)** in **SLAM pipelines**, with a focus on real-time operation on **embedded and edge devices**.
 
----
 
 ## Motivation and Problem Statement
 
@@ -195,7 +230,6 @@ This project proposes the development, implementation, and evaluation of lightwe
 - **Research Goal**:
   - Bring transformer-based VO models to edge devices via lightweight, efficient architectures.
 
----
 
 ## Background
 
