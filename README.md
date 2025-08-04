@@ -209,6 +209,153 @@ We propose the following enhancements:
 These directions aim to improve trajectory robustness while keeping the model lightweight and fast for real-time applications.
 
 
+````markdown
+##  2025/08/04 MobileViT + TSFormer for Visual Odometry on KITTI
+
+This project implements a lightweight Transformer-based Visual Odometry (VO) pipeline by combining **MobileViT** as a spatial encoder and **TSFormer** as a temporal encoder. The system is evaluated on the **KITTI Odometry Dataset**.
+
+---
+
+###  Overview
+
+- **Input**: Sequence of 3 RGB frames from KITTI
+- **Backbone**: [MobileViT](https://github.com/apple/ml-cvnets) (lightweight ViT hybrid)
+- **Temporal Modeling**: TSFormer-style transformer encoder
+- **Output**: 6-DoF relative pose (translation + rotation)
+- **Loss**: SE(3) regression loss (translation + rotation vector)
+
+---
+
+### Project Structure
+
+```bash
+.
+├── data/
+│   └── kitti/
+│       ├── sequences/         # KITTI image sequences
+│       └── poses/             # Ground truth poses
+├── models/
+│   ├── mobilevit.py           # MobileViT encoder
+│   └── tsformer_vo.py         # TSFormer + regression head
+├── datasets/
+│   └── kitti_vo_dataset.py    # KITTI Dataset loader
+├── train_vo.py                # Training script
+├── eval_vo.py                 # Evaluation script
+├── utils/
+│   ├── losses.py              # SE(3) pose loss
+│   ├── metrics.py             # ATE, RPE computation
+│   └── vis.py                 # Trajectory visualization
+├── checkpoints/
+│   └── model_best.pth         # Saved model weights
+└── README.md
+````
+
+---
+
+### Setup
+
+```bash
+# Create virtual environment
+conda create -n vo-transformer python=3.10
+conda activate vo-transformer
+
+# Install dependencies
+pip install torch torchvision timm einops kornia opencv-python matplotlib pandas pyquaternion
+```
+
+---
+
+### Dataset
+
+Download KITTI VO dataset:
+
+* [KITTI Odometry (Official)](http://www.cvlibs.net/datasets/kitti/eval_odometry.php)
+
+Expected structure:
+
+```bash
+data/kitti/
+├── sequences/
+│   ├── 00/
+│   │   └── image_2/000000.png ...
+└── poses/
+    └── 00.txt
+```
+
+---
+
+### Model Summary
+
+**Architecture:**
+
+```text
+Input RGB Frames → MobileViT Encoder (per-frame)
+                 → Stack features across time
+                 → TSFormer Temporal Attention
+                 → MLP Regression Head
+                 → Output: [tx, ty, tz, rx, ry, rz]
+```
+
+---
+
+### Training
+
+```bash
+python train_vo.py --data_root ./data/kitti \
+                   --seqs 00 01 02 04 06 \
+                   --model mobilevit_tsformer \
+                   --epochs 100 \
+                   --lr 1e-4
+```
+
+---
+
+### Evaluation
+
+```bash
+python eval_vo.py --checkpoint ./checkpoints/model_best.pth \
+                  --data_root ./data/kitti \
+                  --seq 09
+```
+
+Metrics:
+
+* ATE (Absolute Trajectory Error)
+* RPE (Relative Pose Error)
+
+---
+
+### Visualization
+
+```bash
+# Predicted vs Ground Truth
+python utils/vis.py --pred traj_pred.csv --gt traj_gt.csv
+```
+
+---
+
+### Loss Function
+
+```python
+L = || t̂ - t ||² + β * || r̂ - r ||²
+```
+
+Where:
+
+* `t` = translation vector (3D)
+* `r` = rotation vector (axis-angle)
+* `β` = scaling factor for balancing loss
+
+
+### References
+
+* [MobileViT](https://arxiv.org/abs/2110.02178)
+* [TSFormer-VO](https://arxiv.org/abs/2305.06121)
+* [KITTI Dataset](http://www.cvlibs.net/datasets/kitti)
+
+
+
+
 # Efficient Vision Transformer Architecture for Visual Odometry in SLAM Applications on Edge Devices
 
 ## Overview
