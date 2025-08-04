@@ -209,7 +209,7 @@ We propose the following enhancements:
 These directions aim to improve trajectory robustness while keeping the model lightweight and fast for real-time applications.
 
 
-````markdown
+
 ##  2025/08/04 MobileViT + TSFormer for Visual Odometry on KITTI
 
 This project implements a lightweight Transformer-based Visual Odometry (VO) pipeline by combining **MobileViT** as a spatial encoder and **TSFormer** as a temporal encoder. The system is evaluated on the **KITTI Odometry Dataset**.
