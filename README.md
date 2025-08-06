@@ -353,7 +353,30 @@ Where:
 * [TSFormer-VO](https://arxiv.org/abs/2305.06121)
 * [KITTI Dataset](http://www.cvlibs.net/datasets/kitti)
 
+## Update: 2025-08-06  MobileViT for Visual Odometry
 
+- Added a lightweight `MobileViT_VO` backbone for feature extraction in visual odometry tasks.
+- Replaced ImageNet classifier head with `[B, C, H, W]` feature map output suitable for TSFormer-VO integration.
+- Included `visualize_feature_map()` utility to inspect spatial feature activations.
+- Default input: 256×256 RGB images.
+- Tested with dummy input and ready for real image loading.
+
+### Example Usage
+```python
+from mobilevit_vo import mobilevit_xxs_vo, visualize_feature_map
+import torch
+
+# Create model
+model = mobilevit_xxs_vo()
+
+# Test with random image
+x = torch.randn(1, 3, 256, 256)
+features = model(x)
+print(features.shape)  # → [1, C, H, W]
+
+# Visualize first 8 channels
+visualize_feature_map(features, title=\"Feature Map (XXS)\")
+```
 
 
 # Efficient Vision Transformer Architecture for Visual Odometry in SLAM Applications on Edge Devices
