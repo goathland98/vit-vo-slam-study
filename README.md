@@ -377,7 +377,73 @@ print(features.shape)  # → [1, C, H, W]
 # Visualize first 8 channels
 visualize_feature_map(features, title=\"Feature Map (XXS)\")
 ```
+## Daily Update: 2025/08/13
 
+### Summary
+
+Today we completed a full rewrite of the hybrid **MobileViT + Transformer-based** visual odometry model. Although the file was originally named `mobilevit_timesformer.py`, it **does not use the TimeSformer** implementation from the ViT repo. Instead, it uses **PyTorch’s built-in `nn.TransformerEncoder`** for temporal modeling across video frames.
+
+---
+
+### Files Updated
+
+#### 1. `mobilevit_timesformer.py`
+
+**Rewritten to:**
+- Use a **MobileViT** variant (`XXS`, `XS`, or `S`) as the *spatial encoder*.
+- Extract spatial features frame-by-frame and aggregate them into a temporal sequence.
+- Project per-frame features (`[B, T, backbone_dim]`) to a transformer embedding dimension via a `Linear` layer.
+- Feed the sequence into a `TransformerEncoder` for **temporal attention modeling**.
+- Use a final MLP head (`output_head`) for pose regression (`[B, dim] → [B, 6 × (T−1)]`).
+
+>  Note: TimeSformer was **not** used in this implementation. The name remains for compatibility.
+
+---
+
+#### 2. `build_model.py`
+
+
+**Key changes:**
+- Separated configuration dictionaries into `spatial_model_params` (MobileViT) and `transformer_params` (TransformerEncoder).
+- Replaced `timesformer_params` with `transformer_params` to match the revised module.
+- Updated model instantiation to use the new `MobileViT_TimeSformer` class.
+
+---
+
+#### 3. `train.py`
+
+**Fixes applied:**
+- Updated the model loading code to only expect a single `model` return from `build_model(...)`.
+- Fixed argument passing to match new architecture.
+- Confirmed compatibility with KITTI dataloader and training loop.
+
+---
+
+###  Model Architecture Overview
+
+```text
+Input: [B, C, T, H, W]
+   │
+   ▼
+MobileViT Backbone (per frame): [B, C, H, W] → [B, D]
+   │
+   ▼
+Temporal stacking: [B, T, D]
+   │
+   ▼
+Linear projection: [B, T, D] → [B, T, dim]
+   │
+   ▼
+TransformerEncoder:
+    - Input: [T, B, dim]
+    - Captures temporal dependencies across frames
+   │
+   ▼
+Mean pooling: [T, B, dim] → [B, dim]
+   │
+   ▼
+Output head (pose regression): [B, dim] → [B, num_classes]
+```
 
 # Efficient Vision Transformer Architecture for Visual Odometry in SLAM Applications on Edge Devices
 
