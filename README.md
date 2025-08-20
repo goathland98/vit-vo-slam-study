@@ -444,7 +444,38 @@ Mean pooling: [T, B, dim] → [B, dim]
    ▼
 Output head (pose regression): [B, dim] → [B, num_classes]
 ```
+### 2025-08-20 — Daily Update: Milestone A (Foundations)
 
+**Objective:** Set up repo skeleton, core geometry utilities, and KITTI I/O with unit tests.
+
+#### What we did
+- **Repo scaffold**
+  - Created: `configs/`, `models/`, `utils/`, `tests/`, plus stubs `train.py`, `evaluate.py`
+  - Added `__init__.py` to `utils/` and `models/` (fix import paths)
+- **Geometry (`utils/geometry.py`)**
+  - Implemented: `skew`, `vee`, `so3_exp`, `so3_log`, **batch-safe** `se3_exp` (stable left-Jacobian w/ small-angle series), `se3_inv`, `se3_mul`, `project_points`, `bilinear_sampler`
+  - Fixed broadcasting bug in `se3_exp` (correct scalar expansion + identity expansion)
+- **KITTI I/O (`utils/kitti_io.py`)**
+  - Parsed `calib.txt` (P2/P3) → `K_left`, `K_right`, **baseline** `B = -P3[0,3]/fx`
+  - Helpers to list `image_2/` & `image_3/`, plus CLI sanity print
+  - Linked dataset at `./data` (symlink to KITTI odometry root)
+- **Config**
+  - Added `configs/kitti_monocular.yaml` (placeholders for `data_root`, clip length, etc.)
+- **Tests**
+  - `tests/test_geometry.py`: SO(3)/SE(3) round-trip, compose·inverse, grid-sampler identity
+  - `tests/test_kitti_io.py`: synthetic checks for `K` and baseline extraction
+  - Resolved `ModuleNotFoundError: utils` via package inits and repo-root pytest
+
+#### How we verified
+bash
+# run unit tests (disable unrelated plugins, e.g., ROS)
+```
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 pytest -q
+```
+# real-data sanity (expect K matrix, B ≈ 0.54 m, and image counts)
+```
+python -m utils.kitti_io --seq_root ./data/sequences/09
+```
 # Efficient Vision Transformer Architecture for Visual Odometry in SLAM Applications on Edge Devices
 
 ## Overview
