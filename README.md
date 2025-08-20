@@ -467,12 +467,12 @@ Output head (pose regression): [B, dim] → [B, num_classes]
   - Resolved `ModuleNotFoundError: utils` via package inits and repo-root pytest
 
 #### How we verified
-bash
-# run unit tests (disable unrelated plugins, e.g., ROS)
+
+- run unit tests (disable unrelated plugins, e.g., ROS)
 ```
 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 pytest -q
 ```
-# real-data sanity (expect K matrix, B ≈ 0.54 m, and image counts)
+- real-data sanity (expect K matrix, B ≈ 0.54 m, and image counts)
 ```
 python -m utils.kitti_io --seq_root ./data/sequences/09
 ```
