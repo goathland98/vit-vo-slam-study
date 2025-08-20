@@ -444,11 +444,11 @@ Mean pooling: [T, B, dim] → [B, dim]
    ▼
 Output head (pose regression): [B, dim] → [B, num_classes]
 ```
-### 2025-08-20 — Daily Update: Milestone A (Foundations)
+## 2025-08-20 — Daily Update: Milestone A (Foundations)
 
 **Objective:** Set up repo skeleton, core geometry utilities, and KITTI I/O with unit tests.
 
-#### What we did
+### What we did
 - **Repo scaffold**
   - Created: `configs/`, `models/`, `utils/`, `tests/`, plus stubs `train.py`, `evaluate.py`
   - Added `__init__.py` to `utils/` and `models/` (fix import paths)
