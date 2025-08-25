@@ -476,7 +476,7 @@ PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 pytest -q
 ```
 python -m utils.kitti_io --seq_root ./data/sequences/09
 ```
-# Daily Update — 2025-08-25 (KST)
+# Daily Update 2025-08-25 
 
 ## TL;DR
 
