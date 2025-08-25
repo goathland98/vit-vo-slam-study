@@ -476,6 +476,109 @@ PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 pytest -q
 ```
 python -m utils.kitti_io --seq_root ./data/sequences/09
 ```
+# Daily Update — 2025-08-25 (KST)
+
+## TL;DR
+
+* Added a **simple MobileViT + Temporal Transformer** VO model (`MVitTSVO`) that takes a 2-frame clip and predicts the 6-DoF relative pose.
+* Wrote a **minimal training script** (`train_core.py`) that plugs into existing KITTI pair loader and uses our established **geodesic SO(3) + Smooth-L1** losses.
+* Kept things **plain & stable**: no AMP/TF32/compile tricks—just clean PyTorch.
+
+---
+
+## What changed
+
+###  New
+
+* `models/mvit_tsvo.py`
+
+  * `MobileViTSpatial` (per-frame features via `timm` MobileViT, global pooled).
+  * `TemporalTransformer` (tiny `nn.TransformerEncoder` over time).
+  * `PairPoseHead` (predicts 6-DoF per adjacent pair).
+  * `MVitTSVO` wrapper returning `[B, (T-1)*6]` (for T=2 → `[B,6]`).
+
+###  Updated
+
+* `train_core.py`
+
+  * Uses `KittiMonocularPairs` to get `(img_i, img_j, T_ij)`.
+  * Packs each pair into a **2-frame clip** and feeds `MVitTSVO`.
+  * Computes losses:
+
+    * **Rotation**: geodesic SO(3) (radians).
+    * **Translation**: Smooth-L1.
+  * Evaluates Δ=1 **RPE** (m, deg).
+  * Checkpointing:
+
+    * Best: `ckpts/tsvo_best.pt`
+    * Periodic every 20 epochs: `ckpts/tsvo_epXXX.pt`
+    * Last: `ckpts/tsvo_last.pt`
+
+---
+
+## Config updates (example)
+
+Add this (or keep your existing YAML and append `model:`):
+
+```yaml
+data_root: ./data
+sequences_train: [0,1,2,3,4,5,6,7,8]
+sequences_val: [9]
+img_short_side: 224
+frame_delta: 1
+batch_size: 4
+num_workers: 2
+
+epochs: 20
+lr: 1e-4
+weight_decay: 0.05
+grad_clip: 1.0
+loss: { rot_w: 1.0, trans_w: 1.0 }
+
+model:
+  mvit_variant: mobilevit_xs     # mobilevit_xxs | mobilevit_xs | mobilevit_s
+  mvit_pretrained: false         # set true if you want ImageNet init
+  t_heads: 4
+  t_layers: 2
+  t_dropout: 0.1
+  head_hidden: 512
+```
+
+---
+
+### How to run
+
+```bash
+# install deps (if needed)
+pip install timm tqdm tensorboard einops
+
+# train
+python train_core.py --config configs/kitti_monocular.yaml
+```
+
+**Outputs**
+
+* Checkpoints → `ckpts/tsvo_best.pt`, `ckpts/tsvo_last.pt`, `ckpts/tsvo_ep020.pt` …
+* Console logs print per-epoch train/val loss + RPE.
+
+---
+
+### Notes & decisions
+
+* We deliberately **skipped speed features** (AMP/TF32/compile) to keep the baseline simple and debuggable.
+* Losses and evaluation match Foundation-B conventions, so later comparisons are apples-to-apples.
+* The model supports longer clips (`T>2`) if/when we switch the dataset to provide windows.
+
+---
+
+### Next steps
+
+*  (Optional) turn on `mvit_pretrained: true` to test if ImageNet init stabilizes convergence.
+*  Add TensorBoard & CSV logging (simple to wire in, if desired).
+*  Quick qualitative: run on a short sequence and visualize integrated trajectory for sanity.
+*  Explore longer temporal windows (`window_size>2`) once training is stable on pairs.
+
+
 # Efficient Vision Transformer Architecture for Visual Odometry in SLAM Applications on Edge Devices
 
 ## Overview
