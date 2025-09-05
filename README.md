@@ -802,4 +802,69 @@ This project aims to design, implement, and evaluate **lightweight Vision Transf
 
 ---
 
+# 2025/09/05 Introduction Section - Peer Review Feedback Summary (Daily Update)
 
+## I. Summary of Peer Feedback
+
+- 기존 VO 문제의 흐름 설명이 부족함
+- CNN 기반 VO의 구조 및 한계에 대한 설명 미비
+- 기존 → CNN → ViT → Video Transformer 로 구성 흐름 필요
+- context vector, global alignment 용어는 Introduction에서 Background로 이동 권고
+- Grayscale vs RGB / Image vs Patch 구분 필요
+- FLOP 수치 제시의 목적 명확화 필요
+- Edge 디바이스 스펙 비교 출처 불명, 미시적 조건 타당성 재확인 필요
+- MobileViT-VO 관련 설명 중 6-DoF fine-tuning metric의 한계 명확화 필요
+- Evaluation 슬라이드는 Introduction에서 제거 권고
+- 전체적으로 영어 표기 짤림/문법 오류 수정 필요
+
+---
+
+## II. Slide Restructuring Plan
+
+### ✔️ 기술 흐름 시각화 구조
+```
+[Traditional VO]
+   ↓
+[CNN-based VO]
+   ↓
+[ViT-based VO]
+   ↓
+[Video Transformer for VO]
+```
+
+- 기존 방식의 한계 → CNN의 지역성 한계 → ViT의 무거움 → Temporal reasoning 필요
+- Evaluation 파트는 Introduction이 아닌 실험 결과 파트로 분리
+- Problem Statement 중복 내용 정리 및 축약 필요
+
+---
+
+## III. 용어 정리 및 시각자료 보완
+
+### ✅ 용어 재배치
+- `context vector`, `global alignment` → Background 섹션으로 이동
+- MobileViT 및 6-DoF 출력 구조에 대한 간결한 시각화 필요
+
+### ✅ Grayscale vs RGB 정리
+| 항목 | Grayscale | RGB |
+|------|-----------|-----|
+| 채널 수 | 1 | 3 |
+| 정보량 | 낮음 | 높음 |
+| FLOP 영향 | 낮음 | 높음 |
+
+### ✅ Image vs Patch
+- ViT는 이미지를 **patch 단위**로 나누어 처리
+- FLOP 계산은 patch 수와 embedding dimension에 비례
+
+---
+
+## IV. 수정 및 향후 작업 리스트
+
+| 구분 | 수정/작업 항목 | 우선순위 |
+|------|----------------|-----------|
+| 슬라이드 | Problem Statement 슬라이드 간소화 | 🔴 높음 |
+| 슬라이드 | 기술 흐름 정리된 다이어그램 추가 | 🟠 중간 |
+| 설명 | FLOP 수치 제시 목적 및 비교 기준 명확화 | 🔴 높음 |
+| 설명 | MobileViT-VO에서의 6-DoF metric 설명 추가 | 🟠 중간 |
+| 시각자료 | Image vs Patch 비교 및 FLOP 관계 추가 | 🟢 낮음 |
+| 용어 | 영어 표기 오류 수정 및 문장 다듬기 | 🔴 높음 |
+| 출처 | Edge 디바이스 비교 조건의 출처 명시 | 🟠 중간 |
