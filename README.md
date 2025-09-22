@@ -868,3 +868,93 @@ This project aims to design, implement, and evaluate **lightweight Vision Transf
 | 시각자료 | Image vs Patch 비교 및 FLOP 관계 추가 | 🟢 낮음 |
 | 용어 | 영어 표기 오류 수정 및 문장 다듬기 | 🔴 높음 |
 | 출처 | Edge 디바이스 비교 조건의 출처 명시 | 🟠 중간 |
+
+# Daily Update — 2025/09/22
+
+## Highlights
+
+* Finished **stereo migration** of TSFormer-VO (KITTI `image_0`/`image_1`).
+* Added **stereo training pipeline** with speed-ups, CSV+plot logging, and optional episodic restarts.
+* Implemented **inference + visualization**: predicts poses with the stereo model, saves CSVs, and plots **GT vs Pred** trajectories.
+
+## Code Added / Changed
+
+* **Model**
+
+  * `build_model.py`: added `StereoTimeSformer` (Conv3D **2→3** adapter) + `args.stereo`/`args.input_channels`.
+  * Kept `PatchEmbed` unchanged (still sees 3ch via adapter).
+* **Dataset**
+
+  * `datasets/kitti_stereo.py`: emits windows as **\[C=2, T, H, W]** (C0=Left, C1=Right), reuses GT delta logic, grayscale normalize `[0.5]`.
+* **Training**
+
+  * `train_stereo.py` (or `models/stereo/train_stereo_vo.py`):
+
+    * AMP (`--amp`), `cudnn.benchmark`, tuned DataLoader, optional `torch.compile`.
+    * CosineAnnealingWarmRestarts.
+    * **CSV** (`training_log.csv`) + **plots** (`loss_curve.png`, `lr_curve.png`) auto-saved to `--checkpoint_path`.
+    * **Optional** episodic **restart-from-best** (`--restart_from_best`, default OFF) with `--episode_len` (default 20).
+* **Inference / Viz**
+
+  * `predict_stereo_poses.py`: loads stereo model via `build_model`, runs per-sequence inference, **denormalizes** deltas, integrates to global poses, outputs:
+
+    * `pred_vs_gt_<seq>.csv` (deltas + global XYZ for Pred/GT),
+    * `pred_deltas_<seq>.npy`,
+    * `traj_<seq>.png` (GT vs Pred in X-Z).
+
+## How to Train (defaults: 100 epochs, **no restarts**)
+
+```bash
+# run from repo root
+export PYTHONPATH=.
+python train_stereo.py \
+  --data_path data/sequences_jpg --gt_path data/poses \
+  --sequences 00 02 08 09 \
+  --epochs 100 --bsize 4 --num_workers 4 \
+  --amp --pretrained_ViT
+```
+
+Enable episodic restart-from-best:
+
+```bash
+python train_stereo.py \
+  --data_path data/sequences_jpg --gt_path data/poses \
+  --sequences 00 02 08 09 \
+  --epochs 100 --episode_len 20 --restart_from_best \
+  --bsize 4 --num_workers 4
+```
+
+## How to Predict + Plot
+
+```bash
+export PYTHONPATH=.
+python predict_stereo_poses.py \
+  --checkpoint_path checkpoints/ExpStereo \
+  --checkpoint_name checkpoint_best.pth \
+  --sequences 01 03 04 05 06 07 10
+```
+
+Outputs per sequence in `<checkpoint_path>/<checkpoint_name_stem>/`:
+
+* `pred_vs_gt_<seq>.csv`, `pred_deltas_<seq>.npy`, `traj_<seq>.png`
+
+## Notes / Fixes
+
+* If you see `ModuleNotFoundError: No module named 'models'`, either:
+
+  * run script directly (`python train_stereo.py`), **or**
+  * create package layout `models/stereo/__init__.py` and run `python -m models.stereo.train_stereo_vo` with `PYTHONPATH=.`.
+* Default options when no flags are passed: **epochs=100**, **no restarts**, Adam `1e-4`, window size **2**, stereo enabled via adapter, CSV/plots always saved.
+
+## Rationale
+
+* Stereo provides **metric scale** and more stable VO.
+* The **2→3 adapter** preserves ImageNet pretrained ViT weights with minimal code churn.
+* Episodic **restart-from-best** is opt-in: helps escape bad drift; baseline remains unchanged by default.
+
+## Next Steps
+
+* Optional stereo **cost-volume**/correlation for stronger geometry.
+* Optionally add left↔right **photometric loss** using KITTI `calib.txt` intrinsics and baseline.
+* Compute dataset-specific grayscale stats for `image_0`/`image_1` to replace `[0.5]`.
+
