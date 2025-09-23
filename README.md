@@ -958,3 +958,124 @@ Outputs per sequence in `<checkpoint_path>/<checkpoint_name_stem>/`:
 * Optionally add left↔right **photometric loss** using KITTI `calib.txt` intrinsics and baseline.
 * Compute dataset-specific grayscale stats for `image_0`/`image_1` to replace `[0.5]`.
 
+```markdown
+## Evaluation & Profiling
+
+This repo includes two tools:
+
+1. **KITTI Odometry Metrics** — translational error `t_rel` (%) and rotational error `r_rel` (deg/100m) computed over standard segment lengths.
+2. **Cost Evaluation** — measures latency/FPS, CUDA memory usage, and (optionally) GPU power.
+
+---
+
+### 1) KITTI Odometry Metrics
+
+**Script:** `tools/kitti_evaluate.py`  
+**Input:** One or more CSVs from `predict_stereo_poses.py` (files named like `pred_vs_gt_<seq>.csv`).  
+Each CSV must contain columns:
+```
+
+idx,pred\_rz,pred\_ry,pred\_rx,pred\_tx,pred\_ty,pred\_tz,pred\_px,pred\_py,pred\_pz,gt\_px,gt\_py,gt\_pz
+
+````
+
+**Usage (strict, no alignment):**
+```bash
+python tools/kitti_evaluate.py \
+  --csv checkpoints/ExpStereo/checkpoint_best/pred_vs_gt_03.csv \
+       checkpoints/ExpStereo/checkpoint_best/pred_vs_gt_04.csv \
+  --align none
+````
+
+**Options:**
+
+* `--csv`: one or more CSV files to evaluate (can mix sequences).
+* `--align`: `none` (default, **recommended for stereo**), `scale` (scale-only), or `se3` (full Procrustes).
+* `--out`: optional path for the summary CSV (default: `kitti_eval_summary.csv` next to first input CSV).
+
+**Outputs:**
+
+* Pretty-printed table of segment-wise averages (100–800 m).
+* `kitti_eval_summary.csv` with per-length means/std and overall means/std.
+
+**Notes:**
+
+* Use `--align none` to demonstrate true **metric scale** (stereo).
+* `--align scale` or `--align se3` are useful for shape-only diagnostics or monocular baselines.
+
+---
+
+### 2) Cost Evaluation (Latency / FPS / Memory / Power)
+
+**Script:** `tools/cost_eval.py`
+**Input:** A trained checkpoint + a KITTI Stereo loader.
+**What it does:** Runs several warmup and measured iterations on your model, reports:
+
+* **Latency per batch** (ms)
+* **Throughput** in **frames/s** (`frames = batch_size × window_size`)
+* **Max CUDA memory** allocated/reserved
+* **GPU power** (optional; requires NVIDIA + `pynvml`)
+
+**Usage (AMP on):**
+
+```bash
+python tools/cost_eval.py \
+  --checkpoint_path checkpoints/ExpStereo \
+  --checkpoint_name checkpoint_best.pth \
+  --data_path data/sequences_jpg \
+  --gt_path data/poses \
+  --sequences 00 \
+  --bsize 4 --num_workers 4 \
+  --iters_measure 50 \
+  --amp
+```
+
+**Optional power sampling (NVIDIA only):**
+
+```bash
+pip install pynvml
+python tools/cost_eval.py ... --power
+```
+
+**Key Options:**
+
+* `--checkpoint_path`: folder containing `args.pkl` and the checkpoint file.
+* `--checkpoint_name`: checkpoint filename (e.g., `checkpoint_best.pth`).
+* `--data_path`, `--gt_path`: override paths; otherwise read from saved `args.pkl`.
+* `--sequences`: one or more sequences to iterate over for input.
+* `--bsize`: batch size for profiling (**affects FPS/latency**).
+* `--iters_warmup`: warmup iterations (default 10).
+* `--iters_measure`: measured iterations (default 50).
+* `--amp`: enable mixed precision (recommended on modern GPUs).
+* `--power`: sample GPU power (requires `pynvml` and an NVIDIA GPU).
+* `--out_csv`: output CSV path (default: `<checkpoint_path>/cost_eval.csv`).
+
+**Outputs:**
+
+* Console summary (latency/FPS/memory/power).
+* CSV (default `cost_eval.csv`) with columns:
+
+  ```
+  bsize,window_size,amp,iters_measure,
+  latency_ms_mean,latency_ms_std,
+  fps_mean,fps_std,
+  cuda_mem_alloc_mib,cuda_mem_reserved_mib,
+  gpu_power_w_mean,gpu_power_w_std
+  ```
+
+**Notes:**
+
+* FPS is computed as **frames/s**, where frames = `batch_size × window_size`.
+  If you prefer “windows/s”, divide FPS by `window_size`.
+* Enable `--amp` to profile realistic training/inference settings.
+* For memory, both **allocated** and **reserved** are reported (MiB).
+
+
+### Quick Tips
+
+* Run `predict_stereo_poses.py` first to generate the per-sequence CSVs used by the KITTI evaluator.
+* For **fair KITTI reporting** on stereo VO, use `--align none`.
+* To compare against monocular baselines, try `--align scale` (common in papers) and report both.
+* When changing `--bsize` or `--window_size`, re-run **cost\_eval**; these directly impact latency/FPS.
+
+
