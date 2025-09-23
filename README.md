@@ -1018,7 +1018,8 @@ python tools/kitti_evaluate.py \
 
 **Usage (AMP on):**
 
-```bash
+```
+bash
 python tools/cost_eval.py \
   --checkpoint_path checkpoints/ExpStereo \
   --checkpoint_name checkpoint_best.pth \
