@@ -958,8 +958,8 @@ Outputs per sequence in `<checkpoint_path>/<checkpoint_name_stem>/`:
 * Optionally add left↔right **photometric loss** using KITTI `calib.txt` intrinsics and baseline.
 * Compute dataset-specific grayscale stats for `image_0`/`image_1` to replace `[0.5]`.
 
-```markdown
-## Evaluation & Profiling
+
+## Evaluation & Profiling 2025/09/23
 
 This repo includes two tools:
 
@@ -973,6 +973,7 @@ This repo includes two tools:
 **Script:** `tools/kitti_evaluate.py`  
 **Input:** One or more CSVs from `predict_stereo_poses.py` (files named like `pred_vs_gt_<seq>.csv`).  
 Each CSV must contain columns:
+
 ```
 
 idx,pred\_rz,pred\_ry,pred\_rx,pred\_tx,pred\_ty,pred\_tz,pred\_px,pred\_py,pred\_pz,gt\_px,gt\_py,gt\_pz
@@ -980,7 +981,8 @@ idx,pred\_rz,pred\_ry,pred\_rx,pred\_tx,pred\_ty,pred\_tz,pred\_px,pred\_py,pred
 ````
 
 **Usage (strict, no alignment):**
-```bash
+```
+bash
 python tools/kitti_evaluate.py \
   --csv checkpoints/ExpStereo/checkpoint_best/pred_vs_gt_03.csv \
        checkpoints/ExpStereo/checkpoint_best/pred_vs_gt_04.csv \
