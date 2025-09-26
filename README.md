@@ -1118,7 +1118,7 @@ Here’s a ready-to-paste **daily update** in Markdown for **2025/09/26**:
     --early_stop_patience 30
 ````
 
-* Expected runtime: ~72h, producing ~700–900 epochs with restarts every 20 epochs.
+Expected runtime: ~72h, producing ~700–900 epochs with restarts every 20 epochs.
 
 ## Next Steps
 
