@@ -1102,7 +1102,7 @@ Here’s a ready-to-paste **daily update** in Markdown for **2025/09/26**:
 
 ## Training
 - Current command (3-day run, ~800 epochs target):
-  ```bash
+  ```
   python train_stereo_aft.py \
     --data_path data/sequences_jpg --gt_path data/poses \
     --sequences 00 02 08 09 \
@@ -1116,7 +1116,7 @@ Here’s a ready-to-paste **daily update** in Markdown for **2025/09/26**:
     --predict_variance --angle_weight 10 \
     --restart_from_best --episode_len 20 \
     --early_stop_patience 30
-````
+```
 
 Expected runtime: ~72h, producing ~700–900 epochs with restarts every 20 epochs.
 
