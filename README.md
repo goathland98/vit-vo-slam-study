@@ -1081,4 +1081,52 @@ python tools/cost_eval.py ... --power
 * To compare against monocular baselines, try `--align scale` (common in papers) and report both.
 * When changing `--bsize` or `--window_size`, re-run **cost\_eval**; these directly impact latency/FPS.
 
+Here’s a ready-to-paste **daily update** in Markdown for **2025/09/26**:
+
+# Daily Update — 2025/09/26
+
+## Progress
+- Implemented **AFT-lite stereo VO** model:
+  - Added **per-view TimeSformer backbones** (Left & Right) with Conv3D adapters to reuse ImageNet pretrained ViT weights.
+  - Each view predicts **(μ, logσ)** for 6-DoF relative poses.
+  - Introduced **fusion transformer** to combine Left/Right proposals using source and time encodings.
+  - Final fused pose prediction outputs `[B, 6*(T−1)]` (and optional variance for NLL training).
+- Updated **`train_stereo_aft.py`**:
+  - Supports **Gaussian NLL loss** (`--predict_variance`) with angle weighting.
+  - Added **episodic restart** (`--restart_from_best --episode_len 20`) and **early stopping**.
+  - Integrated **AMP** and optional **torch.compile** for speed and memory efficiency.
+  - Logs training/validation losses to **TensorBoard** and CSV.
+- Fixed **shape mismatch bug**:
+  - Now infer `T−1` from tensor dimensions inside `compute_loss` (rather than relying on missing `window_size`).
+  - Aliased `args.window_size = args.num_frames` for backward compatibility.
+
+## Training
+- Current command (3-day run, ~800 epochs target):
+  ```bash
+  python train_stereo_aft.py \
+    --data_path data/sequences_jpg --gt_path data/poses \
+    --sequences 00 02 08 09 \
+    --checkpoint_path checkpoints/stereo_aft_3day_run_compile \
+    --embed_dim 192 --depth 12 --heads 3 \
+    --num_frames 3 --bsize 4 --epochs 800 \
+    --optimizer adamw --lr 1e-4 --weight_decay 2e-5 \
+    --scheduler cosine --min_lr 1e-6 \
+    --stereo --aft_fusion \
+    --amp --pretrained_ViT --compile \
+    --predict_variance --angle_weight 10 \
+    --restart_from_best --episode_len 20 \
+    --early_stop_patience 30
+````
+
+* Expected runtime: ~72h, producing ~700–900 epochs with restarts every 20 epochs.
+
+## Next Steps
+
+* Validate trajectory outputs on **KITTI stereo sequences** with updated evaluator.
+* Compare **baseline stereo** vs **AFT-fusion** vs **variance-aware** training.
+* Document cost metrics (FPS, latency, VRAM) alongside accuracy.
+* Prepare **ablation results** table for weekly report.
+
+
+
 
